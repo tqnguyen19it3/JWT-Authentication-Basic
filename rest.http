@@ -1,0 +1,77 @@
+### SITE
+GET http://localhost:3330/
+
+
+### REGISTER
+POST http://localhost:3330/api/v1/auth/register
+Content-Type: application/json
+
+{
+    "name": "tqnguyen19it3vku",
+    "email": "tqnguyen.19it3@vku.udn.vn",
+    "password": "123456",
+    "passwordConfirm": "123456"
+}
+
+
+### LOGIN
+POST http://localhost:3330/api/v1/auth/login
+Content-Type: application/json
+
+{
+    "email": "drhappykun@gmail.com",
+    "password": "NXWzynTD"
+}
+
+
+### LOGOUT
+DELETE http://localhost:3330/api/v1/auth/logout
+Content-Type: application/json
+
+{
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Njg1MDk3N2EzNjEyZTM0ODg3Y2NlNGEiLCJuYW1lIjoidHFuZ3V5ZW4xOWl0M3ZrdSIsImVtYWlsIjoidHFuZ3V5ZW4uMTlpdDNAdmt1LnVkbi52biIsImlhdCI6MTcxOTk5NDg1OCwiZXhwIjoxNzE5OTk1NDU4fQ.JCjFdrcNPtEybRcsc9IUYimsk9iN6jz28NzwBk8soXE"
+}
+
+
+### REFRESH TOKEN
+POST http://localhost:3330/api/v1/auth/refresh-token
+Content-Type: application/json
+
+{
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Njg0Y2Q2Y2ZlNjk0MmY1ZWE2MzI4ZDgiLCJuYW1lIjoiZHJoYXBweWt1biIsImVtYWlsIjoiZHJoYXBweWt1bjFAZ21haWwuY29tIiwiaWF0IjoxNzE5OTg3NTQ2LCJleHAiOjE3MTk5ODc2NjZ9.AgY4wzKv5vPf07wnENRd2uxXbHwImjYDq0uv9aoblKA"
+}
+
+
+###
+PUT http://localhost:3330/api/v1/auth/change-password
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Njg0Y2NjN2ZlNjk0MmY1ZWE2MzI4ZDIiLCJuYW1lIjoiZHJoYXBweWt1biIsImVtYWlsIjoiZHJoYXBweWt1bkBnbWFpbC5jb20iLCJpYXQiOjE3MTk5OTQ5MjUsImV4cCI6MTcxOTk5NTIyNX0.fyfLJhyGHZadj0DBUjWWCluoFdGGnT6mbylEm86IkZ0
+
+{
+    "currentPassword": "NXWzynTD",
+    "newPassword": "123456",
+    "passwordConfirm": "123456"
+}
+
+
+###
+POST http://localhost:3330/api/v1/auth/forgot-password
+Content-Type: application/json
+
+{
+    "email": "drhappykun@gmail.com"
+}
+
+
+### AUTH GOOGLE
+POST http://localhost:3330/api/v1/auth/google
+Content-Type: application/json
+
+{
+    "access_token": "ya29.a0AXooCguiGzYw0Spm3KsKqJpoCOw5l-5Rqe9tmJsJ9r9f6-iFtKBsDsIqwCd-t7xxvRp1RmVYXYCI58VJ9s0hbQRx5fkKQwEk3WkTo_0nDeMRkS4PKsUmQuncze6eOfxqbTJRV0E0_j4KaJr0QFw-3LMGgN-CoRtE0nW9aCgYKASgSARASFQHGX2MiF4BAWBsDYyVbuAixw8PqOQ0171"
+}
+
+
+### GET LIST USER BY ADMIN
+GET http://localhost:3330/api/v1/auth/get-user-list
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Njg0Y2Q2Y2ZlNjk0MmY1ZWE2MzI4ZDgiLCJuYW1lIjoiZHJoYXBweWt1biIsImVtYWlsIjoiZHJoYXBweWt1bjFAZ21haWwuY29tIiwiaWF0IjoxNzE5OTg3NjE1LCJleHAiOjE3MTk5ODc2NzV9.bHrjJ6oY0N3FqdkeJZgQjNpU5pzoJNIT8tE3CIF4VMs
