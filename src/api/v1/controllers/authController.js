@@ -1,7 +1,6 @@
-const bcrypt = require('bcrypt');
 const createError = require('http-errors');
 const { userRegisterValidate, userLoginValidate, userForgetPasswordValidate, userChangePasswordValidate} = require('../validations/authValidate');
-const { generateRandomPassword } = require('../utils/generate_random_password');
+const authService = require('../services/authService');
 const { signAccessToken, signRefreshToken, verifyRefreshToken } = require('../helpers/jwt_service');
 const { sendMailCreateAccount, sendMailForgetPassword } = require('../helpers/sendMail');
 const redisClient = require('../../../config/db/redis');
@@ -14,25 +13,17 @@ const userModel = require('../models/userModel');
 // [POST] / register
 exports.register = async (req, res, next) => {
     try {
-        const { name, email, password, passwordConfirm } = req.body;
+        const { name, email, password } = req.body;
+
         // validate all fields
         const { error } = userRegisterValidate(req.body);
         if(error){
             throw createError(error.details[0].message);
         }
-        // check email exits
-        const existingUser = await userModel.findOne({ email });
-        if (existingUser) {
-            throw createError.Conflict(`Register Failed! ${email} already exists`);
-        }
-        const salt = await bcrypt.genSalt(10);
-        const hashPassword = await bcrypt.hash(password, salt);
-        // store 1 user in mongodb
-        const user = await userModel.create({
-            name,
-            email,
-            password: hashPassword,
-        });
+
+        // store 1 user in mongodb from authService
+        const user = await authService.createUser({ name, email, password });
+       
         // send mail to user
         await sendMailCreateAccount(
             email,
@@ -59,16 +50,9 @@ exports.login = async (req, res, next) => {
         if(error){
             throw createError(error.details[0].message);
         }
-        //check user exits
-        const user = await userModel.findOne({ email });
-        if(!user){
-            throw createError.NotFound(`Login Failed! ${email} not registered`);
-        }
-        //check password
-        const isPassValid = bcrypt.compareSync(password, user.password);
-        if(!isPassValid){
-            throw createError.Unauthorized();
-        }
+
+        const user = await authService.loginUser({ email, password });
+
         // create jwt when login success
         const payload = {
             _id: user._id,
@@ -118,23 +102,8 @@ exports.changePassword = async (req, res, next) => {
         if(error){
             throw createError(error.details[0].message);
         }
-        // check user exits
-        const user = await userModel.findById(req.payload._id);
-        if (!user) {
-            throw createError.NotFound();
-        }
-
-        //check password
-        const isPassValid = await bcrypt.compareSync(currentPassword, user.password);
-        if(!isPassValid){
-            throw createError.Unauthorized("Old password is invalid!");
-        }
-
-        const salt = await bcrypt.genSalt(10);
-        const hashPassword = await bcrypt.hash(newPassword, salt);
-        user.password = hashPassword;
-
-        await user.save();
+        let userID = req.payload._id;
+        await authService.changeUserPassword({ userID, currentPassword, newPassword });
 
         return res.status(200).json({
             message: "Password change successful!", 
@@ -153,24 +122,15 @@ exports.forgotPassword  = async (req, res, next) => {
         if(error){
             throw createError(error.details[0].message);
         }
-        //check user exits
-        const user = await userModel.findOne({ email });
-        if(!user){
-            throw createError.NotFound(`Failed! ${email} not registered`);
-        }
-        // create new password
-        const password  = await generateRandomPassword();
-        const salt = await bcrypt.genSalt(10);
-        const hashPassword = await bcrypt.hash(password, salt);
-        // update new password in db
-        await userModel.updateOne({ email: email }, { password: hashPassword });
 
+        const user = await authService.forgetUserPassword({ email });
+        
         await sendMailForgetPassword(
             email,
             user.name,
             "Reset Your Password",
-            password,
-            `<p>Your password is: ${password}</p>`
+            user.passwordGen,
+            `<p>Your password is: ${user.passwordGen}</p>`
         );
 
         return res.status(200).json({
