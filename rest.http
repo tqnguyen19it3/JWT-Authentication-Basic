@@ -68,7 +68,7 @@ POST http://localhost:3330/api/v1/auth/google
 Content-Type: application/json
 
 {
-    "access_token": "ya29.a0AXooCguiGzYw0Spm3KsKqJpoCOw5l-5Rqe9tmJsJ9r9f6-iFtKBsDsIqwCd-t7xxvRp1RmVYXYCI58VJ9s0hbQRx5fkKQwEk3WkTo_0nDeMRkS4PKsUmQuncze6eOfxqbTJRV0E0_j4KaJr0QFw-3LMGgN-CoRtE0nW9aCgYKASgSARASFQHGX2MiF4BAWBsDYyVbuAixw8PqOQ0171"
+    "access_token": ""
 }
 
 
