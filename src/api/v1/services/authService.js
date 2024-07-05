@@ -2,6 +2,7 @@ const createError = require('http-errors');
 const bcrypt = require('bcrypt');
 const userModel = require('../models/userModel');
 const { generateRandomPassword } = require('../utils/generate_random_password');
+const genHash = require('../utils/genHash');
 
 const createUser = async ({ name, email, password }) => {
     // check email exits
@@ -9,8 +10,7 @@ const createUser = async ({ name, email, password }) => {
     if (existingUser) {
         throw createError.Conflict(`Register Failed! ${email} already exists`);
     }
-    const salt = await bcrypt.genSalt(10);
-    const hashPassword = await bcrypt.hash(password, salt);
+    const hashPassword = await genHash.genHashPassword(password);
     // store 1 user in mongodb
     const user = await userModel.create({
         name,
@@ -48,9 +48,7 @@ const changeUserPassword = async ({ userID, currentPassword, newPassword }) => {
     if(!isPassValid){
         throw createError.Unauthorized("Old password is invalid!");
     }
-
-    const salt = await bcrypt.genSalt(10);
-    const hashPassword = await bcrypt.hash(newPassword, salt);
+    const hashPassword = await genHash.genHashPassword(password);
     user.password = hashPassword;
 
     await user.save();
@@ -64,8 +62,7 @@ const forgetUserPassword = async ({ email }) => {
     }
     // create new password
     const password  = await generateRandomPassword();
-    const salt = await bcrypt.genSalt(10);
-    const hashPassword = await bcrypt.hash(password, salt);
+    const hashPassword = await genHash.genHashPassword(password);
     // update new password in db
     await userModel.updateOne({ email: email }, { password: hashPassword });
     user.passwordGen = password;

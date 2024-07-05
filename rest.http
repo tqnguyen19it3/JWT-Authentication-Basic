@@ -7,8 +7,8 @@ POST http://localhost:3330/api/v1/auth/register
 Content-Type: application/json
 
 {
-    "name": "drhappykuntqn",
-    "email": "drhappykun.tqn@gmail.com",
+    "name": "rumtqn",
+    "email": "rumtqn@gmail.com",
     "password": "123456",
     "passwordConfirm": "123456"
 }
